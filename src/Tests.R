@@ -1,3 +1,4 @@
+setwd("/Users/wangzexianleo/Desktop/PhD/STAT600/HW/stat-600-hw6-leo-chen/src")
 # This is a script to save your own tests for the function
 source("FunctionsLR.R")
 
