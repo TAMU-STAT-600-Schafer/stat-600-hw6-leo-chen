@@ -15,7 +15,11 @@ Yt = c(1, 0, 3, 2)
 Xt = matrix(rnorm(4*19), 4)
 X = cbind(1, X)
 Xt = cbind(1, Xt)
+K = max(Y) + 1
+beta_init = matrix(0, 20, K)
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
+out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
+
 plot(out$objective, type = 'o', xlab = "number of iterations", ylab = "objective values")
 plot(out$error_train, type = 'o', xlab = "number of iterations", ylab = "training error")
 plot(out$error_test, type = 'o')
