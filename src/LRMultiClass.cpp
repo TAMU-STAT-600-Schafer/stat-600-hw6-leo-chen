@@ -8,6 +8,28 @@
 //
 // [[Rcpp::depends(RcppArmadillo)]]
 
+// this function computes P and returns P as a matrix for all possible k
+// [[Rcpp::export]]
+arma::mat prob(const arma::mat& X, const arma::mat& beta) {
+  arma::mat expm = exp(X * beta);
+  return expm.each_row() / sum(expm, 1);
+}
+
+// this function returns the value of the objective function
+// [[Rcpp::export]]
+double obj(const arma::mat& X, const arma::uvec& y, double lambda, const arma::mat& beta) {
+  arma::mat P = prob(X, beta);
+  // sums the log probabilities of the class for each sample plus the ridge penalty term
+  return -arma::accu(log(P.submat(arma::regspace<arma::uvec>(0, X.n_rows - 1), y))) + 0.5 * lambda * arma::accu(beta % beta);
+}
+
+// this function computes the classification error
+// [[Rcpp::export]]
+double error(const arma::mat& X, const arma::uvec& y, const arma::mat& beta) {
+  arma::uvec predicted_class = arma::index_max(prob(X, beta), 1);
+  return 100 * arma::mean(predicted_class != y); // returns the proportion of misclassified samples
+}
+
 // For simplicity, no test data, only training data, and no error calculation.
 // X - n x p data matrix
 // y - n length vector of classes, from 0 to K-1
@@ -28,9 +50,18 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     arma::vec objective(numIter + 1); // to store objective values
     
     // Initialize anything else that you may need
-    
+    objective(0) = obj(X, y, lambda, beta); // initialise objective value
     // Newton's method cycle - implement the update EXACTLY numIter iterations
-    
+    for (int i = 0; i < numIter; i++) { // repeats for every iteration until the total number of iterations is reached
+      arma::mat P = prob(X, beta);
+      for (int j = 0; j < K; j++) { // repeats for the K classes
+        arma::vec P_k = P.col(j);
+        arma::vec grad = X.t() * (P_k - (y == j)) + lambda * beta.col(j); // computes gradient
+        arma::mat H = X.t() * diagmat(P_k % (1 - P_k)) * X + lambda * arma::eye(p, p); // computes Hessian
+        beta.col(j) -= eta * (H.i() * grad); // updates beta according to the damped Newton's method
+      }
+      objective(i + 1) = obj(X, y, lambda, beta);
+    }
     
     // Create named list with betas and objective values
     return Rcpp::List::create(Rcpp::Named("beta") = beta,
