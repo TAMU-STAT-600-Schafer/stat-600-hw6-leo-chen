@@ -18,7 +18,7 @@ arma::mat prob_c(const arma::mat& X, const arma::mat& beta) {
 // this function returns the value of the objective function
 // [[Rcpp::export]]
 double obj_c(const arma::mat& X, const arma::uvec& y, double lambda, const arma::mat& beta) {
-  arma::mat P = prob(X, beta);
+  arma::mat P = prob_c(X, beta);
   // sums the log probabilities of the class for each sample plus the ridge penalty term
   return -arma::accu(log(P.submat(arma::regspace<arma::uvec>(0, X.n_rows - 1), y))) + 0.5 * lambda * arma::accu(beta % beta);
 }
@@ -26,7 +26,7 @@ double obj_c(const arma::mat& X, const arma::uvec& y, double lambda, const arma:
 // this function computes the classification error
 // [[Rcpp::export]]
 double error_c(const arma::mat& X, const arma::uvec& y, const arma::mat& beta) {
-  arma::uvec predicted_class = arma::index_max(prob(X, beta), 1);
+  arma::uvec predicted_class = arma::index_max(prob_c(X, beta), 1);
   return 100 * arma::mean(predicted_class != y); // returns the proportion of misclassified samples
 }
 
