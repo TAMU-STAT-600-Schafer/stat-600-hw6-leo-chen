@@ -50,17 +50,17 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     arma::vec objective(numIter + 1); // to store objective values
     
     // Initialize anything else that you may need
-    objective(0) = obj(X, y, lambda, beta); // initialise objective value
+    objective(0) = obj_c(X, y, lambda, beta); // initialise objective value
     // Newton's method cycle - implement the update EXACTLY numIter iterations
     for (int i = 0; i < numIter; i++) { // repeats for every iteration until the total number of iterations is reached
-      arma::mat P = prob(X, beta);
+      arma::mat P = prob_c(X, beta);
       for (int j = 0; j < K; j++) { // repeats for the K classes
         arma::vec P_k = P.col(j);
         arma::vec grad = X.t() * (P_k - (y == j)) + lambda * beta.col(j); // computes gradient
         arma::mat H = X.t() * diagmat(P_k % (1 - P_k)) * X + lambda * arma::eye(p, p); // computes Hessian
         beta.col(j) -= eta * (H.i() * grad); // updates beta according to the damped Newton's method
       }
-      objective(i + 1) = obj(X, y, lambda, beta);
+      objective(i + 1) = obj_c(X, y, lambda, beta);
     }
     
     // Create named list with betas and objective values
