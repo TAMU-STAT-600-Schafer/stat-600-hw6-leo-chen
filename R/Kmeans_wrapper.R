@@ -10,23 +10,31 @@
 #' @param M Optional initial K x p matrix of cluster centers. If NULL, K rows will be randomly sampled from X
 #' @param numIter Maximum number of iterations (default: 100)
 #'
-#' @return A vector of cluster assignments (integers from 0 to K-1)
+#' @return A vector of cluster assignments (integers from 1 to K)
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' # Generate sample data with two clusters
 #' set.seed(123)
+#' n_per_cluster <- 50
 #' X <- rbind(
-#'   matrix(rnorm(100, mean = 0, sd = 0.3), ncol = 2),
-#'   matrix(rnorm(100, mean = 2, sd = 0.3), ncol = 2)
+#'   matrix(rnorm(n_per_cluster * 2, mean = 0, sd = 0.3), ncol = 2),
+#'   matrix(rnorm(n_per_cluster * 2, mean = 2, sd = 0.3), ncol = 2)
 #' )
 #' 
 #' # Run clustering
 #' clusters <- MyKmeans(X, K = 2)
 #' 
 #' # Plot results
-#' plot(X, col = clusters, pch = 16,
-#'      main = "K-means Clustering Results")
+#' if(interactive()) {
+#'   plot(X, col = clusters, pch = 16,
+#'        main = "K-means Clustering Results",
+#'        xlab = "X1", ylab = "X2")
+#'   legend("topright", legend = paste("Cluster", 1:2),
+#'          col = 1:2, pch = 16)
+#' }
+#' }
 MyKmeans <- function(X, K, M = NULL, numIter = 100) {
   # Input validation
   if (!is.matrix(X)) {
