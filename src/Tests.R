@@ -4,10 +4,13 @@ source("FunctionsLR.R")
 
 library(Rcpp)
 library(RcppArmadillo)
+library(fossil)  # For calculating Rand Index
 
-# Source your C++ funcitons
+# Source your C++ functions
 sourceCpp("LRMultiClass.cpp")
+sourceCpp("kmeans.cpp")
 
+# ====================== Tests for LRMultiClass ======================
 # first test case
 Y = c(0, 1, 2, 3, 4, 3, 2, 1, 0, 2, 3, 4, 1, 2, 0, 4)
 X = matrix(rnorm(16*19), 16)
@@ -108,3 +111,115 @@ out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1, beta_init 
 plot(out$objective, type = 'o', xlab = "number of iterations", ylab = "objective values")
 plot(out$error_train, type = 'o', xlab = "number of iterations", ylab = "training error")
 plot(out$error_test, type = 'o')
+
+# ====================== Tests for MyKmeans ======================
+# Test Case 1: Two Distinct Clusters in 2D
+set.seed(123)
+cluster1 <- matrix(rnorm(50, mean = 0, sd = 0.5), ncol = 2)
+cluster2 <- matrix(rnorm(50, mean = 5, sd = 0.5), ncol = 2)
+X_test1 <- rbind(cluster1, cluster2)
+true_labels1 <- c(rep(1, 25), rep(2, 25))
+
+Y_pred1 <- MyKmeans(X_test1, K = 2)
+rand_index1 <- rand.index(Y_pred1, true_labels1)
+print(paste("Test Case 1 - Rand Index:", rand_index1))
+
+# Visual inspection
+plot(X_test1, col = Y_pred1, pch = 16, main = "Test Case 1: K-means Clustering Results")
+legend("topright", legend = paste("Cluster", 1:2), col = 1:2, pch = 16)
+
+# Test Case 2: Three Overlapping Clusters in 2D
+set.seed(456)
+cluster1 <- matrix(rnorm(30, mean = 0, sd = 0.8), ncol = 2)
+cluster2 <- matrix(rnorm(30, mean = 3, sd = 0.8), ncol = 2)
+cluster3 <- matrix(rnorm(30, mean = 6, sd = 0.8), ncol = 2)
+X_test2 <- rbind(cluster1, cluster2, cluster3)
+true_labels2 <- c(rep(1, 15), rep(2, 15), rep(3, 15))
+
+Y_pred2 <- MyKmeans(X_test2, K = 3)
+rand_index2 <- rand.index(Y_pred2, true_labels2)
+print(paste("Test Case 2 - Rand Index:", rand_index2))
+
+# Visual inspection
+plot(X_test2, col = Y_pred2, pch = 16, main = "Test Case 2: K-means Clustering Results")
+legend("topright", legend = paste("Cluster", 1:3), col = 1:3, pch = 16)
+
+# Test Case 3: Single Cluster
+set.seed(789)
+X_test3 <- matrix(rnorm(50, mean = 0, sd = 0.5), ncol = 2)
+Y_pred3 <- MyKmeans(X_test3, K = 1)
+unique_clusters3 <- length(unique(Y_pred3))
+print(paste("Test Case 3 - Number of clusters found:", unique_clusters3))
+
+# Test Case 4: Invalid M
+set.seed(101112)
+X_test4 <- matrix(rnorm(40, mean = 0, sd = 0.5), ncol = 2)
+M_invalid <- matrix(0, nrow = 3, ncol = ncol(X_test4) + 1)
+print("Test Case 4 - Testing with invalid M:")
+tryCatch({
+  Y_pred4 <- MyKmeans(X_test4, K = 2, M = M_invalid)
+}, error = function(e) {
+  print("Error caught as expected:")
+  print(e$message)
+})
+
+# Test Case 5: Cluster Disappearance
+set.seed(131415)
+X_test5 <- matrix(rnorm(60, mean = 0, sd = 1), ncol = 2)
+M_bad <- X_test5[1:2, ]
+print("Test Case 5 - Testing cluster disappearance:")
+tryCatch({
+  Y_pred5 <- MyKmeans(X_test5, K = 3, M = M_bad)
+}, error = function(e) {
+  print("Cluster disappearance handled:")
+  print(e$message)
+})
+
+# Test Case 6: High-dimensional Data
+set.seed(161718)
+X_test6_cluster1 <- matrix(rnorm(500, mean = 0), ncol = 50)
+X_test6_cluster2 <- matrix(rnorm(500, mean = 3), ncol = 50)
+X_test6 <- rbind(X_test6_cluster1, X_test6_cluster2)
+true_labels6 <- c(rep(1, 10), rep(2, 10))
+
+Y_pred6 <- MyKmeans(X_test6, K = 2)
+rand_index6 <- rand.index(Y_pred6, true_labels6)
+print(paste("Test Case 6 - Rand Index:", rand_index6))
+
+# Performance Testing
+library(microbenchmark)
+print(microbenchmark(
+  MyKmeans(X_test6, K = 2),
+  times = 10
+))
+
+# Test Case 7-10: Edge Cases and Consistency
+set.seed(192021)
+X_test7 <- matrix(rnorm(10, mean = 0, sd = 1), ncol = 2)
+print("Test Case 7 - Testing with K larger than number of points:")
+tryCatch({
+  Y_pred7 <- MyKmeans(X_test7, K = 15)
+}, error = function(e) {
+  print("Error caught as expected:")
+  print(e$message)
+})
+
+# Test identical data points
+X_test8 <- matrix(rep(1, 20), ncol = 2)
+print("Test Case 8 - Testing with identical data points:")
+tryCatch({
+  Y_pred8 <- MyKmeans(X_test8, K = 3)
+}, error = function(e) {
+  print("Error caught as expected:")
+  print(e$message)
+})
+
+# Test consistency
+set.seed(222324)
+X_test9 <- matrix(rnorm(50, mean = 0, sd = 0.5), ncol = 2)
+set.seed(252627)
+Y_pred9a <- MyKmeans(X_test9, K = 2)
+set.seed(252627)
+Y_pred9b <- MyKmeans(X_test9, K = 2)
+consistency <- identical(Y_pred9a, Y_pred9b)
+print(paste("Test Case 9 - Consistency across runs:", consistency))
