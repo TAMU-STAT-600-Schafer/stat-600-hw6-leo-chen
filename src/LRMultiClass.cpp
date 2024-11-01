@@ -57,5 +57,5 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     
     // Create named list with betas and objective values
     return Rcpp::List::create(Rcpp::Named("beta") = beta,
-                              Rcpp::Named("objective") = Rcpp::wrap(objective));
+                              Rcpp::Named("objective") = objective);
 }
