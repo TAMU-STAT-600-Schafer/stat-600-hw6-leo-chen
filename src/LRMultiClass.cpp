@@ -12,7 +12,8 @@
 // [[Rcpp::export]]
 arma::mat prob_c(const arma::mat& X, const arma::mat& beta) {
   arma::mat expm = exp(X * beta);
-  return expm.each_row() / sum(expm, 1);
+  arma::rowvec sum_expm = sum(expm, 1); // calculate the sum for each row
+  return expm.each_row() / sum_expm;
 }
 
 // this function returns the value of the objective function
@@ -21,13 +22,6 @@ double obj_c(const arma::mat& X, const arma::uvec& y, double lambda, const arma:
   arma::mat P = prob_c(X, beta);
   // sums the log probabilities of the class for each sample plus the ridge penalty term
   return -arma::accu(log(P.submat(arma::regspace<arma::uvec>(0, X.n_rows - 1), y))) + 0.5 * lambda * arma::accu(beta % beta);
-}
-
-// this function computes the classification error
-// [[Rcpp::export]]
-double error_c(const arma::mat& X, const arma::uvec& y, const arma::mat& beta) {
-  arma::uvec predicted_class = arma::index_max(prob_c(X, beta), 1);
-  return 100 * arma::mean(predicted_class != y); // returns the proportion of misclassified samples
 }
 
 // For simplicity, no test data, only training data, and no error calculation.
@@ -45,7 +39,6 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     // Initialize some parameters
     int K = max(y) + 1; // number of classes
     int p = X.n_cols;
-    int n = X.n_rows;
     arma::mat beta = beta_init; // to store betas and be able to change them if needed
     arma::vec objective(numIter + 1); // to store objective values
     
