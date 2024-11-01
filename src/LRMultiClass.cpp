@@ -12,8 +12,7 @@
 // [[Rcpp::export]]
 arma::mat prob_c(const arma::mat& X, const arma::mat& beta) {
   arma::mat expm = exp(X * beta);
-  arma::rowvec sum_expm = sum(expm, 1); // calculate the sum for each row
-  return expm.each_row() / sum_expm.t();
+  return expm.each_row() / sum(expm, 1); 
 }
 
 // this function returns the value of the objective function
