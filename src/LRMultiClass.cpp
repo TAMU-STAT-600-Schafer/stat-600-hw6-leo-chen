@@ -39,10 +39,10 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     int K = max(y) + 1; // number of classes
     int p = X.n_cols;
     arma::mat beta = beta_init; // to store betas and be able to change them if needed
-    Rcpp::List objective(numIter + 1); // to store objective values
+    std::vector<double> objective; // to store objective values
     
     // Initialize anything else that you may need
-    objective(0) = obj_c(X, y, lambda, beta); // initialize objective value
+    objective.push_back(obj_c(X, y, lambda, beta)); // initialize objective value
     // Newton's method cycle - implement the update EXACTLY numIter iterations
     for (int i = 0; i < numIter; i++) { // repeats for every iteration until the total number of iterations is reached
       arma::mat P = prob_c(X, beta);
@@ -52,7 +52,7 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
         arma::mat H = X.t() * diagmat(P_k % (1 - P_k)) * X + lambda * arma::eye(p, p); // computes Hessian
         beta.col(j) -= eta * (H.i() * grad); // updates beta according to the damped Newton's method
       }
-      objective(i + 1) = obj_c(X, y, lambda, beta); // store the objective value for this iteration
+      objective.push_back(obj_c(X, y, lambda, beta)); // store the objective value for this iteration
     }
     
     // Create named list with betas and objective values
