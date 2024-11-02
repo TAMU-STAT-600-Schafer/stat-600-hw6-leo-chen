@@ -1,4 +1,4 @@
-setwd("/Users/wangzexianleo/Desktop/PhD/STAT600/HW/stat-600-hw6-leo-chen/src")
+# setwd("/Users/wangzexianleo/Desktop/PhD/STAT600/HW/stat-600-hw6-leo-chen/src")
 # This is a script to save your own tests for the function
 source("FunctionsLR.R")
 
@@ -23,33 +23,33 @@ K = max(Y) + 1
 beta_init = matrix(0, 20, K)
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true 
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 500, eta = 0.1, lambda = 1) # more iterations
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 500, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 1) # larger eta
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.01, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 5)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 0.5)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 # comparing speeds of R and C++ functions
 library(microbenchmark)
@@ -71,33 +71,33 @@ K = max(Y) + 1
 beta_init = matrix(0, 100, K)
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 500, eta = 0.1, lambda = 1) # more iterations
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 500, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 1) # larger eta
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.01, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 5)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 0.5)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 # comparing speeds of R and C++ functions
 library(microbenchmark)
@@ -120,33 +120,33 @@ K = max(Y) + 1
 beta_init = matrix(0, 17, K)
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 500, eta = 0.1, lambda = 1) # more iterations
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 500, eta = 0.1, lambda = 1) # more iterations
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 1) # larger eta
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 1) # larger eta
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true 
+all.equal(out$objective, out_c$objective) # returns true
 
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
-all.equal(out$beta, out_c$beta)
-all.equal(out$objective, out_c$objective)
+all.equal(out$beta, out_c$beta) # returns true
+all.equal(out$objective, out_c$objective) # returns true
 
 # comparing speeds of R and C++ functions
 library(microbenchmark)
