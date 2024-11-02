@@ -12,6 +12,7 @@ sourceCpp("kmeans.cpp")
 
 # ====================== Tests for LRMultiClass ======================
 # first test case
+set.seed(936002904)
 Y = c(0, 1, 2, 3, 4, 3, 2, 1, 0, 2, 3, 4, 1, 2, 0, 4)
 X = matrix(rnorm(16*19), 16)
 Yt = c(1, 0, 3, 2)
@@ -59,6 +60,7 @@ print(microbenchmark(
 ))
 
 # 2nd test case
+set.seed(936002904)
 Y = rbinom(200, size = 10, prob = 0.5) - 1
 X = matrix(rbinom(200*99, 10, 0.5), 200)
 Yt = rbinom(30, size = 10, prob = 0.5) - 1
