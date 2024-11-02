@@ -18,9 +18,14 @@ arma::mat prob_c(const arma::mat& X, const arma::mat& beta) {
 // this function returns the value of the objective function
 // [[Rcpp::export]]
 double obj_c(const arma::mat& X, const arma::uvec& y, double lambda, const arma::mat& beta) {
-  arma::mat P = prob_c(X, beta);
+  arma::mat P = prob_c(X, beta); // calculate probabilities
+  double log_sum = 0.0;
+  // repeat for each sample to compute the log probabilities
+  for (size_t i = 0; i < X.n_rows; ++i) {
+    log_sum += log(P(i, y(i))); // probabilities for each class
+  }
   // sums the log probabilities of the class for each sample plus the ridge penalty term
-  return -arma::accu(log(P.submat(arma::regspace<arma::uvec>(0, X.n_rows - 1), y))) + 0.5 * lambda * arma::accu(beta % beta);
+  return -log_sum + 0.5 * lambda * arma::accu(beta % beta);
 }
 
 // For simplicity, no test data, only training data, and no error calculation.
