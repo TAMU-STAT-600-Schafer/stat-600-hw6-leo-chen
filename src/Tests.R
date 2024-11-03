@@ -156,6 +156,17 @@ print(microbenchmark(
   times = 20
 ))
 
+# compatibility checks to see if error messages will be returned appropriately
+# Y = c(0, 1, 2, 3, 4, 3, 2, 1, 0, 2, 3, 4, 1, 2, 0, 4)
+# X = matrix(rnorm(16*19), 16)
+# X = cbind(1, X)
+# out = LRMultiClass(matrix(rnorm(17*20), 17), Y, numIter = 50, eta = 0.1, lambda = 1)
+# out = LRMultiClass(X, c(0, 1, 2, 3), numIter = 50, eta = 0.1, lambda = 1)
+# out = LRMultiClass(X, Y, numIter = 50, eta = -0.1, lambda = 1)
+# out = LRMultiClass(X, Y, numIter = 50, eta = 0.1, lambda = -1)
+# out = LRMultiClass(X, Y, numIter = 50, eta = 0.1, lambda = 1, beta_init = matrix(0, 20, 2))
+# out = LRMultiClass(X, Y, numIter = 50, eta = 0.1, lambda = 1, beta_init = matrix(0, 2, 5))
+
 
 # ====================== Tests for MyKmeans ======================
 # Test Case 1: Two Distinct Clusters in 2D
