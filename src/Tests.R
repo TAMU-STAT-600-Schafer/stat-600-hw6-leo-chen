@@ -1,4 +1,4 @@
-# setwd("/Users/wangzexianleo/Desktop/PhD/STAT600/HW/stat-600-hw6-leo-chen/src")
+# setwd("/Users/apple/AM-Stat/Courses/Stat600/stat-600-hw6-leo-chen/src")
 # This is a script to save your own tests for the function
 source("FunctionsLR.R")
 
@@ -11,7 +11,8 @@ sourceCpp("LRMultiClass.cpp")
 sourceCpp("kmeans.cpp")
 
 # ====================== Tests for LRMultiClass ======================
-# first test case
+
+# Test Case 1: Small Dataset with Multiple Classes
 set.seed(936004902)
 Y = c(0, 1, 2, 3, 4, 3, 2, 1, 0, 2, 3, 4, 1, 2, 0, 4)
 X = matrix(rnorm(16*19), 16)
@@ -21,45 +22,42 @@ X = cbind(1, X)
 Xt = cbind(1, Xt)
 K = length(unique(Y))
 beta_init = matrix(0, 20, K)
+
+print("Test Case 1 - Testing basic functionality and parameter variations:")
+# Basic functionality test
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true 
-all.equal(out$objective, out_c$objective) # returns true
+print(paste("Basic test - Beta matrices equal:", all.equal(out$beta, out_c$beta)))
+print(paste("Basic test - Objectives equal:", all.equal(out$objective, out_c$objective)))
 
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 500, eta = 0.1, lambda = 1) # more iterations
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 500, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
+# Parameter variation tests
+print("\nTesting different parameter combinations:")
+test_params = list(
+  list(iter = 500, eta = 0.1, lambda = 1, desc = "More iterations"),
+  list(iter = 50, eta = 0.5, lambda = 1, desc = "Larger eta"),
+  list(iter = 50, eta = 0.01, lambda = 1, desc = "Smaller eta"),
+  list(iter = 50, eta = 0.5, lambda = 5, desc = "Larger lambda"),
+  list(iter = 50, eta = 0.5, lambda = 0.5, desc = "Smaller lambda")
+)
 
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 1) # larger eta
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
+for(params in test_params) {
+  out = LRMultiClass(X, Y, Xt, Yt, numIter = params$iter, eta = params$eta, lambda = params$lambda)
+  out_c = LRMultiClass_c(X, Y, beta_init, numIter = params$iter, eta = params$eta, lambda = params$lambda)
+  print(paste(params$desc, "- Beta matrices equal:", all.equal(out$beta, out_c$beta)))
+  print(paste(params$desc, "- Objectives equal:", all.equal(out$objective, out_c$objective)))
+}
 
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.01, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 5)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 0.5)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-# comparing speeds of R and C++ functions
+# Performance comparison
+print("\nPerformance Comparison:")
 library(microbenchmark)
 print(microbenchmark(
-  LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1),
-  LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1),
+  R_version = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1),
+  Cpp_version = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1),
   times = 20
 ))
 
-# 2nd test case
+# Test Case 2: Larger Dataset with Binary Classification
+print("\nTest Case 2 - Testing with larger binary classification dataset:")
 set.seed(936004902)
 Y = rbinom(200, size = 10, prob = 0.5) - 1
 X = matrix(rbinom(200*99, 10, 0.5), 200)
@@ -69,45 +67,31 @@ X = cbind(1, X)
 Xt = cbind(1, Xt)
 K = length(unique(Y))
 beta_init = matrix(0, 100, K)
+
+# Run same tests with new dataset
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
+print(paste("Basic test - Beta matrices equal:", all.equal(out$beta, out_c$beta)))
+print(paste("Basic test - Objectives equal:", all.equal(out$objective, out_c$objective)))
 
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 500, eta = 0.1, lambda = 1) # more iterations
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 500, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
+# Parameter variations for larger dataset
+for(params in test_params) {
+  out = LRMultiClass(X, Y, Xt, Yt, numIter = params$iter, eta = params$eta, lambda = params$lambda)
+  out_c = LRMultiClass_c(X, Y, beta_init, numIter = params$iter, eta = params$eta, lambda = params$lambda)
+  print(paste(params$desc, "- Beta matrices equal:", all.equal(out$beta, out_c$beta)))
+  print(paste(params$desc, "- Objectives equal:", all.equal(out$objective, out_c$objective)))
+}
 
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 1) # larger eta
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.01, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 5)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 0.5)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-# comparing speeds of R and C++ functions
-library(microbenchmark)
+# Performance comparison for larger dataset
+print("\nPerformance Comparison (Larger Dataset):")
 print(microbenchmark(
-  LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1),
-  LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1),
+  R_version = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1),
+  Cpp_version = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1),
   times = 20
 ))
 
-# tests relating to the letter example
+# Test Case 3: Letter Recognition Dataset
+print("\nTest Case 3 - Testing with letter recognition dataset:")
 letter_train <- read.table("Data/letter-train.txt", header = F, colClasses = "numeric")
 Y <- letter_train[, 1]
 X <- as.matrix(letter_train[, -1])
@@ -118,43 +102,67 @@ X = cbind(1, X)
 Xt = cbind(1, Xt)
 K = length(unique(Y))
 beta_init = matrix(0, 17, K)
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
 
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 500, eta = 0.1, lambda = 1) # more iterations
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 500, eta = 0.1, lambda = 1) # more iterations
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
+# Run same tests with letter dataset
+for(params in test_params) {
+  out = LRMultiClass(X, Y, Xt, Yt, numIter = params$iter, eta = params$eta, lambda = params$lambda)
+  out_c = LRMultiClass_c(X, Y, beta_init, numIter = params$iter, eta = params$eta, lambda = params$lambda)
+  print(paste(params$desc, "- Beta matrices equal:", all.equal(out$beta, out_c$beta)))
+  print(paste(params$desc, "- Objectives equal:", all.equal(out$objective, out_c$objective)))
+}
 
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 1) # larger eta
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 1) # larger eta
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.01, lambda = 1) # smaller eta
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 5) # larger lambda
-all.equal(out$beta, out_c$beta) # returns true 
-all.equal(out$objective, out_c$objective) # returns true
-
-out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
-out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.5, lambda = 0.5) # smaller lambda
-all.equal(out$beta, out_c$beta) # returns true
-all.equal(out$objective, out_c$objective) # returns true
-
-# comparing speeds of R and C++ functions
-library(microbenchmark)
+# Performance comparison for letter dataset
+print("\nPerformance Comparison (Letter Dataset):")
 print(microbenchmark(
-  LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1),
-  LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1),
+  R_version = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1),
+  Cpp_version = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1),
   times = 20
 ))
+
+# Test Case 4: Edge Cases and Error Handling
+print("\nTest Case 4 - Testing error handling:")
+
+# Test with incorrect first column
+print("Testing with non-intercept first column:")
+X_bad = matrix(rnorm(16*20), 16, 20)
+tryCatch({
+  out = LRMultiClass(X_bad, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
+}, error = function(e) {
+  print(paste("Error caught as expected:", e$message))
+})
+
+# Test dimension mismatch
+print("\nTesting dimension mismatch:")
+tryCatch({
+  out = LRMultiClass(X, c(0, 1, 2, 3), Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
+}, error = function(e) {
+  print(paste("Error caught as expected:", e$message))
+})
+
+# Test negative learning rate
+print("\nTesting negative learning rate:")
+tryCatch({
+  out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = -0.1, lambda = 1)
+}, error = function(e) {
+  print(paste("Error caught as expected:", e$message))
+})
+
+# Test negative regularization
+print("\nTesting negative regularization:")
+tryCatch({
+  out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = -1)
+}, error = function(e) {
+  print(paste("Error caught as expected:", e$message))
+})
+
+# Test incorrect beta_init dimensions
+print("\nTesting incorrect beta_init dimensions:")
+tryCatch({
+  out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1, 
+                     beta_init = matrix(0, 20, 2))
+}, error = function(e) {
+  print(paste("Error caught as expected:", e$message))
+})
 
 # compatibility checks to see if error messages will be returned appropriately
 # Y = c(0, 1, 2, 3, 4, 3, 2, 1, 0, 2, 3, 4, 1, 2, 0, 4)
