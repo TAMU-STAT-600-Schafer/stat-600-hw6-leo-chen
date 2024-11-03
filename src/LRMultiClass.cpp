@@ -41,7 +41,8 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     // All input is assumed to be correct
     
     // Initialize some parameters
-    int K = max(y) + 1; // number of classes
+    std::set<int> unique_elements(y.begin(), y.end()); // stores unique elements
+    int K = unique_elements.size(); // number of classes
     int p = X.n_cols;
     arma::mat beta = beta_init; // to store betas and be able to change them if needed
     std::vector<double> objective; // to store objective values

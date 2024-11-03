@@ -19,7 +19,7 @@ Yt = c(1, 0, 3, 2)
 Xt = matrix(rnorm(4*19), 4)
 X = cbind(1, X)
 Xt = cbind(1, Xt)
-K = max(Y) + 1
+K = length(unique(Y))
 beta_init = matrix(0, 20, K)
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
@@ -60,14 +60,13 @@ print(microbenchmark(
 ))
 
 # 2nd test case
-set.seed(936002904)
 Y = rbinom(200, size = 10, prob = 0.5) - 1
 X = matrix(rbinom(200*99, 10, 0.5), 200)
 Yt = rbinom(30, size = 10, prob = 0.5) - 1
 Xt = matrix(rbinom(30*99, 10, 0.5), 30)
 X = cbind(1, X)
 Xt = cbind(1, Xt)
-K = max(Y) + 1
+K = length(unique(Y))
 beta_init = matrix(0, 100, K)
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
@@ -116,7 +115,7 @@ Yt <- letter_test[, 1]
 Xt <- as.matrix(letter_test[, -1])
 X = cbind(1, X)
 Xt = cbind(1, Xt)
-K = max(Y) + 1
+K = length(unique(Y))
 beta_init = matrix(0, 17, K)
 out = LRMultiClass(X, Y, Xt, Yt, numIter = 50, eta = 0.1, lambda = 1)
 out_c = LRMultiClass_c(X, Y, beta_init, numIter = 50, eta = 0.1, lambda = 1)
