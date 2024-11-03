@@ -1,18 +1,37 @@
-
-#' Title
+#' Multiclass Logistic Regression Classification
 #'
-#' @param X 
-#' @param y 
-#' @param numIter 
-#' @param eta 
-#' @param lambda 
-#' @param beta_init 
+#' Implements multiclass logistic regression using gradient descent optimization with ridge regularization.
 #'
-#' @return
+#' @param X A numeric matrix of predictors where the first column must be all 1s (intercept term).
+#'          Each row represents an observation and each column represents a feature.
+#' @param y A numeric vector of class labels (response variable). Classes should be coded as 1, 2, ..., K
+#'          where K is the number of classes.
+#' @param numIter An integer specifying the number of iterations for gradient descent optimization.
+#'                Default is 50.
+#' @param eta A positive number specifying the learning rate for gradient descent.
+#'           Default is 0.1.
+#' @param lambda A non-negative number specifying the ridge regularization parameter.
+#'              Default is 1.
+#' @param beta_init Optional initial values for the coefficient matrix. If NULL (default),
+#'                 initializes with a matrix of zeros. If provided, must be a p x K matrix
+#'                 where p is the number of predictors and K is the number of classes.
+#'
+#' @return A list containing the fitted model parameters and classification results:
+#'         \item{beta}{The final coefficient matrix (p x K)}
+#'         \item{classes}{Predicted class labels for the training data}
+#'         \item{probs}{Matrix of predicted probabilities for each class}
 #' @export
 #'
 #' @examples
-#' # Give example
+#' # Create sample data
+#' X <- cbind(1, matrix(rnorm(100 * 3), 100, 3))
+#' y <- sample(1:3, 100, replace = TRUE)
+#' 
+#' # Fit multiclass logistic regression
+#' model <- LRMultiClass(X, y, numIter = 100, eta = 0.1, lambda = 0.5)
+#' 
+#' # View predicted classes
+#' head(model$classes)
 LRMultiClass <- function(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = NULL){
   
   # Compatibility checks from HW3 and initialization of beta_init
