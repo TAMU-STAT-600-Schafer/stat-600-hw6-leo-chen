@@ -82,16 +82,12 @@ LRMultiClass <- function(X, y, numIter = 100, eta = 0.1, lambda = 1, beta_init =
     beta_init <- matrix(0, nrow = p, ncol = K)
   }
   
-  # Ensure beta_init has correct dimensions
-  if (!identical(dim(beta_init), c(p, K))) {
-    stop(sprintf("beta_init must have dimensions %d x %d", p, K))
-  }
-  
   # Call C++ function
-  result <- LRMultiClass_c(X = X, y = y, 
-                          numIter = numIter, 
-                          eta = eta, 
-                          lambda = lambda, 
+  result <- LRMultiClass_c(X = X, 
+                          y = y, 
+                          numIter = as.integer(numIter), 
+                          eta = as.numeric(eta), 
+                          lambda = as.numeric(lambda), 
                           beta_init = beta_init)
   
   return(result)

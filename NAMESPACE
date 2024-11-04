@@ -3,6 +3,5 @@
 export(LRMultiClass)
 export(MyKmeans)
 importFrom(Rcpp,evalCpp)
-importFrom(microbenchmark,microbenchmark)
 importFrom(stats,rnorm)
 useDynLib(GroupHW, .registration = TRUE)
