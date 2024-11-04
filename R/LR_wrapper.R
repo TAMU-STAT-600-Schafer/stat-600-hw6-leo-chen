@@ -1,24 +1,33 @@
-#' Multiclass Logistic Regression Classification
+#' Multiclass Logistic Regression with Ridge Regularization
 #'
-#' Implements multiclass logistic regression using gradient descent optimization with ridge regularization.
+#' Implements multiclass logistic regression using damped Newton's method with ridge regularization.
+#' The implementation uses C++ for efficient computation and handles multiple classes through
+#' a one-vs-all approach.
 #'
 #' @param X A numeric matrix of predictors where the first column must be all 1s (intercept term).
 #'          Each row represents an observation and each column represents a feature.
-#' @param y A numeric vector of class labels (response variable). Classes should be coded as 0, 1, ..., K-1
-#'          where K is the number of classes.
-#' @param numIter An integer specifying the number of iterations for gradient descent optimization.
+#' @param y A numeric vector of class labels. If classes start from 1, they will be
+#'          automatically converted to 0-based indexing (0 to K-1).
+#' @param numIter An integer specifying the number of iterations for Newton's method.
 #'                Default is 100.
-#' @param eta A positive number specifying the learning rate for gradient descent.
-#'           Default is 0.1.
+#' @param eta A positive number specifying the damping parameter for Newton's method.
+#'           Controls the step size of parameter updates. Default is 0.1.
 #' @param lambda A non-negative number specifying the ridge regularization parameter.
-#'              Default is 1.
+#'              Larger values result in stronger regularization. Default is 1.
 #' @param beta_init Optional initial values for the coefficient matrix. If NULL (default),
-#'                 initializes with a matrix of zeros.
+#'                 initializes with a matrix of zeros of size p × K, where p is the
+#'                 number of features and K is the number of classes.
 #'
 #' @return A list containing:
-#'         \item{beta}{The final coefficient matrix (p x K)}
-#'         \item{objective}{Vector of objective function values at each iteration}
-#' @export
+#'         \item{beta}{The final coefficient matrix (p × K) where p is the number
+#'               of features (including intercept) and K is the number of classes}
+#'         \item{objective}{A numeric vector containing the objective function values
+#'               at each iteration, showing the convergence behavior}
+#'
+#' @details The function implements multinomial logistic regression using damped Newton's
+#' method for optimization. The objective function includes a ridge penalty term
+#' (λ/2)||β||²) for regularization. The algorithm uses a C++ implementation for
+#' efficient computation of gradients and Hessians.
 #'
 #' @examples
 #' # Generate example data
@@ -41,6 +50,8 @@
 #' plot(result$objective, type = "l",
 #'      xlab = "Iteration", ylab = "Objective value",
 #'      main = "Convergence plot")
+#'
+#' @export
 LRMultiClass <- function(X, y, numIter = 100, eta = 0.1, lambda = 1, beta_init = NULL) {
   # Input validation
   if (!is.matrix(X)) {
