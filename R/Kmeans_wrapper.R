@@ -26,7 +26,7 @@
 #' # Run clustering
 #' clusters <- MyKmeans(X, K = 2)
 #' 
-#' # Plot results
+#' # Plot results if in interactive session
 #' if(interactive()) {
 #'   plot(X, col = clusters, pch = 16,
 #'        main = "K-means Clustering Results",
@@ -34,7 +34,13 @@
 #'   legend("topright", legend = paste("Cluster", 1:2),
 #'          col = 1:2, pch = 16)
 #' }
+#' 
+#' # Example with custom initial centers
+#' M <- matrix(c(0, 0, 2, 2), nrow = 2, byrow = TRUE)
+#' clusters_custom <- MyKmeans(X, K = 2, M = M)
 #' }
+#'
+#' @importFrom stats rnorm
 MyKmeans <- function(X, K, M = NULL, numIter = 100) {
   # Input validation
   if (!is.matrix(X)) {
