@@ -2,29 +2,56 @@
 % Please edit documentation in R/LR_wrapper.R
 \name{LRMultiClass}
 \alias{LRMultiClass}
-\title{Title}
+\title{Multiclass Logistic Regression Classification}
 \usage{
-LRMultiClass(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = NULL)
+LRMultiClass(X, y, numIter = 100, eta = 0.1, lambda = 1, beta_init = NULL)
 }
 \arguments{
-\item{X}{}
+\item{X}{A numeric matrix of predictors where the first column must be all 1s (intercept term).
+Each row represents an observation and each column represents a feature.}
 
-\item{y}{}
+\item{y}{A numeric vector of class labels (response variable). Classes should be coded as 0, 1, ..., K-1
+where K is the number of classes.}
 
-\item{numIter}{}
+\item{numIter}{An integer specifying the number of iterations for gradient descent optimization.
+Default is 100.}
 
-\item{eta}{}
+\item{eta}{A positive number specifying the learning rate for gradient descent.
+Default is 0.1.}
 
-\item{lambda}{}
+\item{lambda}{A non-negative number specifying the ridge regularization parameter.
+Default is 1.}
 
-\item{beta_init}{}
+\item{beta_init}{Optional initial values for the coefficient matrix. If NULL (default),
+initializes with a matrix of zeros.}
 }
 \value{
-
+A list containing:
+        \item{beta}{The final coefficient matrix (p x K)}
+        \item{objective}{Vector of objective function values at each iteration}
 }
 \description{
-Title
+Implements multiclass logistic regression using gradient descent optimization with ridge regularization.
 }
 \examples{
-# Give example
+# Generate example data
+set.seed(123)
+n <- 50  # number of observations
+p <- 2   # number of features (excluding intercept)
+K <- 3   # number of classes
+
+# Create feature matrix with intercept
+X <- cbind(1, matrix(rnorm(n * p), n, p))
+
+# Generate class labels (0, 1, 2)
+y <- sample(0:(K-1), n, replace = TRUE)
+
+# Fit the model
+result <- LRMultiClass(X, y, numIter = 50)
+
+# Examine results
+head(result$beta)  # View coefficient matrix
+plot(result$objective, type = "l",
+     xlab = "Iteration", ylab = "Objective value",
+     main = "Convergence plot")
 }

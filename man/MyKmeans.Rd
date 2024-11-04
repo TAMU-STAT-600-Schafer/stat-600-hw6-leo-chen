@@ -2,25 +2,52 @@
 % Please edit documentation in R/Kmeans_wrapper.R
 \name{MyKmeans}
 \alias{MyKmeans}
-\title{Title}
+\title{K-means Clustering Algorithm}
 \usage{
 MyKmeans(X, K, M = NULL, numIter = 100)
 }
 \arguments{
-\item{X}{}
+\item{X}{A numeric matrix of n observations (rows) and p variables (columns)}
 
-\item{K}{}
+\item{K}{Integer specifying the number of clusters}
 
-\item{M}{}
+\item{M}{Optional initial K x p matrix of cluster centers. If NULL, K rows will be randomly sampled from X}
 
-\item{numIter}{}
+\item{numIter}{Maximum number of iterations (default: 100)}
 }
 \value{
-Explain return
+A vector of cluster assignments (integers from 1 to K)
 }
 \description{
-Title
+Implements K-means clustering algorithm using C++ for improved performance.
+The algorithm partitions n observations into K clusters where each observation
+belongs to the cluster with the nearest mean.
 }
 \examples{
-# Give example
+\donttest{
+# Generate sample data with two clusters
+set.seed(123)
+n_per_cluster <- 50
+X <- rbind(
+  matrix(rnorm(n_per_cluster * 2, mean = 0, sd = 0.3), ncol = 2),
+  matrix(rnorm(n_per_cluster * 2, mean = 2, sd = 0.3), ncol = 2)
+)
+
+# Run clustering
+clusters <- MyKmeans(X, K = 2)
+
+# Plot results if in interactive session
+if(interactive()) {
+  plot(X, col = clusters, pch = 16,
+       main = "K-means Clustering Results",
+       xlab = "X1", ylab = "X2")
+  legend("topright", legend = paste("Cluster", 1:2),
+         col = 1:2, pch = 16)
+}
+
+# Example with custom initial centers
+M <- matrix(c(0, 0, 2, 2), nrow = 2, byrow = TRUE)
+clusters_custom <- MyKmeans(X, K = 2, M = M)
+}
+
 }
