@@ -6,19 +6,50 @@
 
 using namespace Rcpp;
 
-// LRMultiClass_c
-Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::mat& beta_init, int numIter, double eta, double lambda);
-RcppExport SEXP _GroupHW_LRMultiClass_c(SEXP XSEXP, SEXP ySEXP, SEXP beta_initSEXP, SEXP numIterSEXP, SEXP etaSEXP, SEXP lambdaSEXP) {
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
+// prob_c
+arma::mat prob_c(const arma::mat& X, const arma::mat& beta);
+RcppExport SEXP _GroupHW_prob_c(SEXP XSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(prob_c(X, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// obj_c
+double obj_c(const arma::mat& X, const arma::uvec& y, double lambda, const arma::mat& beta);
+RcppExport SEXP _GroupHW_obj_c(SEXP XSEXP, SEXP ySEXP, SEXP lambdaSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type beta_init(beta_initSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(obj_c(X, y, lambda, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// LRMultiClass_c
+Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::vec& y, int numIter, double eta, double lambda, const arma::mat& beta_init);
+RcppExport SEXP _GroupHW_LRMultiClass_c(SEXP XSEXP, SEXP ySEXP, SEXP numIterSEXP, SEXP etaSEXP, SEXP lambdaSEXP, SEXP beta_initSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     Rcpp::traits::input_parameter< int >::type numIter(numIterSEXP);
     Rcpp::traits::input_parameter< double >::type eta(etaSEXP);
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    rcpp_result_gen = Rcpp::wrap(LRMultiClass_c(X, y, beta_init, numIter, eta, lambda));
+    Rcpp::traits::input_parameter< const arma::mat& >::type beta_init(beta_initSEXP);
+    rcpp_result_gen = Rcpp::wrap(LRMultiClass_c(X, y, numIter, eta, lambda, beta_init));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -38,6 +69,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_GroupHW_prob_c", (DL_FUNC) &_GroupHW_prob_c, 2},
+    {"_GroupHW_obj_c", (DL_FUNC) &_GroupHW_obj_c, 4},
     {"_GroupHW_LRMultiClass_c", (DL_FUNC) &_GroupHW_LRMultiClass_c, 6},
     {"_GroupHW_MyKmeans_c", (DL_FUNC) &_GroupHW_MyKmeans_c, 4},
     {NULL, NULL, 0}

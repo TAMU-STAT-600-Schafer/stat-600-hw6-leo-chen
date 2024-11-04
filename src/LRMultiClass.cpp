@@ -36,32 +36,54 @@ double obj_c(const arma::mat& X, const arma::uvec& y, double lambda, const arma:
 // lambda - ridge parameter, default 1
 // beta_init - p x K matrix of starting beta values (always supplied in right format)
 // [[Rcpp::export]]
-Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::mat& beta_init,
-                               int numIter = 50, double eta = 0.1, double lambda = 1){
-    // All input is assumed to be correct
-    
-    // Initialize some parameters
-    std::set<int> unique_elements(y.begin(), y.end()); // stores unique elements
-    int K = unique_elements.size(); // number of classes
-    int p = X.n_cols;
-    arma::mat beta = beta_init; // to store betas and be able to change them if needed
-    std::vector<double> objective; // to store objective values
-    
-    // Initialize anything else that you may need
-    objective.push_back(obj_c(X, y, lambda, beta)); // initialize objective value
-    // Newton's method cycle - implement the update EXACTLY numIter iterations
-    for (int i = 0; i < numIter; i++) { // repeats for every iteration until the total number of iterations is reached
-      arma::mat P = prob_c(X, beta);
-      for (int j = 0; j < K; j++) { // repeats for the K classes
-        arma::vec P_k = P.col(j);
-        arma::vec grad = X.t() * (P_k - (y == j)) + lambda * beta.col(j); // computes gradient
-        arma::mat H = X.t() * diagmat(P_k % (1 - P_k)) * X + lambda * arma::eye(p, p); // computes Hessian
-        beta.col(j) -= eta * (H.i() * grad); // updates beta according to the damped Newton's method
-      }
-      objective.push_back(obj_c(X, y, lambda, beta)); // store the objective value for this iteration
+Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::vec& y, 
+                         int numIter = 50, double eta = 0.1, 
+                         double lambda = 1, const arma::mat& beta_init = arma::mat()) {
+    // Input validation
+    if (X.n_rows != y.n_elem) {
+        Rcpp::stop("Number of rows in X must match length of y");
     }
     
-    // Create named list with betas and objective values
-    return Rcpp::List::create(Rcpp::Named("beta") = beta,
-                              Rcpp::Named("objective") = objective);
+    // Get dimensions
+    int n = X.n_rows;
+    int p = X.n_cols;
+    int K = arma::max(y) + 1;
+    
+    // Initialize beta if not provided
+    arma::mat beta;
+    if (beta_init.is_empty()) {
+        beta = arma::zeros(p, K);
+    } else {
+        beta = beta_init;
+    }
+    
+    // Initialize objective values vector
+    std::vector<double> objective;
+    objective.push_back(obj_c(X, arma::conv_to<arma::uvec>::from(y), lambda, beta));
+    
+    // Newton's method cycle
+    for (int iter = 0; iter < numIter; iter++) {
+        arma::mat P = prob_c(X, beta);
+        
+        for (int k = 0; k < K; k++) {
+            arma::vec P_k = P.col(k);
+            arma::vec y_k = arma::conv_to<arma::vec>::from(y == k);
+            
+            // Compute gradient and Hessian
+            arma::vec grad = X.t() * (P_k - y_k) + lambda * beta.col(k);
+            arma::mat H = X.t() * arma::diagmat(P_k % (1 - P_k)) * X + 
+                         lambda * arma::eye(p, p);
+            
+            // Update beta using damped Newton's method
+            beta.col(k) -= eta * arma::solve(H, grad);
+        }
+        
+        // Store objective value
+        objective.push_back(obj_c(X, arma::conv_to<arma::uvec>::from(y), lambda, beta));
+    }
+    
+    return Rcpp::List::create(
+        Rcpp::Named("beta") = beta,
+        Rcpp::Named("objective") = objective
+    );
 }
