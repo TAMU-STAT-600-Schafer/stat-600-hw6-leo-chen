@@ -14,9 +14,14 @@ Description: This package provides efficient implementations of K-means clusteri
 License: MIT + file LICENSE
 Imports: 
     Rcpp (>= 1.0.5),
-    stats
+    stats,
+    microbenchmark
 LinkingTo: 
     Rcpp,
     RcppArmadillo
-RoxygenNote: 7.1.1
+Suggests:
+    testthat (>= 3.0.0),
+    fossil
+Config/testthat/edition: 3
+RoxygenNote: 7.3.2
 Encoding: UTF-8
