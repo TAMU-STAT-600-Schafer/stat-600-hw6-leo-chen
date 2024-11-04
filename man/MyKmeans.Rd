@@ -7,25 +7,39 @@
 MyKmeans(X, K, M = NULL, numIter = 100)
 }
 \arguments{
-\item{X}{A numeric matrix of n observations (rows) and p variables (columns)}
+\item{X}{A numeric matrix of n observations (rows) and p variables (columns).
+Each row represents an observation and each column represents a feature.}
 
-\item{K}{Integer specifying the number of clusters}
+\item{K}{Integer specifying the number of clusters (must be positive and less
+than the number of observations).}
 
-\item{M}{Optional initial K x p matrix of cluster centers. If NULL, K rows will be randomly sampled from X}
+\item{M}{Optional initial K x p matrix of cluster centers. If NULL (default),
+K rows will be randomly sampled from X as initial centers.}
 
-\item{numIter}{Maximum number of iterations (default: 100)}
+\item{numIter}{Maximum number of iterations for the algorithm (default: 100).
+The algorithm may converge earlier.}
 }
 \value{
-A vector of cluster assignments (integers from 1 to K)
+A vector of cluster assignments (integers from 1 to K) where the i-th
+        element indicates the cluster assignment for the i-th observation.
 }
 \description{
-Implements K-means clustering algorithm using C++ for improved performance.
-The algorithm partitions n observations into K clusters where each observation
-belongs to the cluster with the nearest mean.
+Implements K-means clustering algorithm using C++ for efficient computation.
+The algorithm partitions n observations into K clusters by minimizing the
+within-cluster sum of squares. Uses Euclidean distance as the distance metric.
+}
+\details{
+The algorithm implements the standard k-means clustering using the following steps:
+1. Initialize cluster centers (randomly or with provided centers)
+2. Assign each point to the nearest center
+3. Update centers as the mean of assigned points
+4. Repeat steps 2-3 until convergence or maximum iterations
+
+The implementation includes checks for empty clusters and uses efficient
+matrix operations through RcppArmadillo.
 }
 \examples{
-\donttest{
-# Generate sample data with two clusters
+# Generate sample data with two well-separated clusters
 set.seed(123)
 n_per_cluster <- 50
 X <- rbind(
@@ -36,18 +50,15 @@ X <- rbind(
 # Run clustering
 clusters <- MyKmeans(X, K = 2)
 
-# Plot results if in interactive session
-if(interactive()) {
-  plot(X, col = clusters, pch = 16,
-       main = "K-means Clustering Results",
-       xlab = "X1", ylab = "X2")
-  legend("topright", legend = paste("Cluster", 1:2),
-         col = 1:2, pch = 16)
-}
+# Plot results
+plot(X, col = clusters, pch = 16,
+     main = "K-means Clustering Results",
+     xlab = "Feature 1", ylab = "Feature 2")
+legend("topright", legend = paste("Cluster", 1:2),
+       col = 1:2, pch = 16)
 
 # Example with custom initial centers
 M <- matrix(c(0, 0, 2, 2), nrow = 2, byrow = TRUE)
 clusters_custom <- MyKmeans(X, K = 2, M = M)
-}
 
 }
