@@ -1,3 +1,4 @@
+#' @importFrom Rcpp evalCpp
 #' @importFrom stats rnorm
-#' @importFrom microbenchmark microbenchmark
+#' @useDynLib GroupHW, .registration = TRUE
 NULL 

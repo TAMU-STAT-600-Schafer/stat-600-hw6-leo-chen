@@ -1,8 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.git$
+^\.gitignore$
 ^src/.*\.o$
 ^src/.*\.so$
 ^src/.*\.dll$
-^\.git$
-^\.gitignore$
-^README\.md$
+^\.DS_Store$

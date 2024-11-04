@@ -9,7 +9,7 @@ obj_c <- function(X, y, lambda, beta) {
     .Call(`_GroupHW_obj_c`, X, y, lambda, beta)
 }
 
-LRMultiClass_c <- function(X, y, numIter = 50L, eta = 0.1, lambda = 1, beta_init) {
+LRMultiClass_c <- function(X, y, numIter, eta, lambda, beta_init) {
     .Call(`_GroupHW_LRMultiClass_c`, X, y, numIter, eta, lambda, beta_init)
 }
 
