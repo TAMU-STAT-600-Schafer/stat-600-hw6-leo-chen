@@ -42,7 +42,7 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
             Rcpp::stop("A cluster has disappeared");
         }
         
-        // Update centroids
+        // re-computes the means of each cluster
         arma::mat new_centroids = arma::zeros(K, p);
         for(int i = 0; i < n; i++) {
             new_centroids.row(Y(i)) += X.row(i);
@@ -51,7 +51,7 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
             new_centroids.row(k) /= cluster_counts(k);
         }
         
-        // Check convergence
+        // stops if the convergence criterion is met (the mean values do not change for every cluster)
         if(accu(abs(new_centroids - centroids)) < 1e-6) {
             break;
         }
