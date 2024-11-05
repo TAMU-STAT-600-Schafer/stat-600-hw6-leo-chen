@@ -30,7 +30,7 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
                      2 * X * centroids.t() + 
                      repmat(sq_M.t(), n, 1);
         
-        // Assign points to nearest centroid
+        // computes the cluster assignments for each observation as the indices of the minimum values across each row
         Y = index_min(D, 1);
         
         // Check for empty clusters
@@ -58,7 +58,6 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
         }
         centroids = new_centroids; // updates centroids
     }
-    
     return Y;
 }
 
