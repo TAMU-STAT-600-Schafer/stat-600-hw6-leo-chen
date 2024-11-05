@@ -47,6 +47,7 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
         for(int i = 0; i < n; i++) {
             new_centroids.row(Y(i)) += X.row(i);
         }
+        
         for(int k = 0; k < K; k++) {
             new_centroids.row(k) /= cluster_counts(k);
         }
@@ -55,8 +56,7 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
         if(accu(abs(new_centroids - centroids)) < 1e-6) {
             break;
         }
-        
-        centroids = new_centroids;
+        centroids = new_centroids; // updates centroids
     }
     
     return Y;
