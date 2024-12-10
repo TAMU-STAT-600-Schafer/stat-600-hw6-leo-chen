@@ -11,27 +11,32 @@
 // [[Rcpp::export]]
 arma::uvec MyKmeans_c(const arma::mat& X, int K,
                       const arma::mat& M, int numIter = 100){
-  // All input is assumed to be correct
+  // Input parameters:
+  // X: Data matrix where each row is an observation and each column is a feature
+  // K: Number of clusters
+  // M: Initial cluster centers matrix (K x p)
+  // numIter: Maximum number of iterations
   
-  // Initialize some parameters
-  int n = X.n_rows;
-  int p = X.n_cols;
-  arma::uvec Y(n); // to store cluster assignments
+  // Initialize dimensions
+  int n = X.n_rows;  // number of observations
+  int p = X.n_cols;  // number of features
+  arma::uvec Y(n);   // cluster assignments vector (0-based indexing)
   
-  // Initialize any additional parameters if needed
-  arma::uvec old_Y = arma::uvec(n).fill(n+1); // initialize with invalid cluster numbers
-  arma::mat M_cal(M); // explicitly use copy constructor to create a copy of M
-  arma::mat cluster_sums(K, p);
-  arma::uvec cluster_sizes(K);
-  arma::rowvec row_sum(K);
-  arma::mat distances(n, K);
-  
-  // For loop with kmeans algorithm
+  // Initialize algorithm variables
+  arma::uvec old_Y = arma::uvec(n).fill(n+1);  // previous cluster assignments
+  arma::mat M_cal(M);                           // current cluster centers
+  arma::mat cluster_sums(K, p);                 // sum of points in each cluster
+  arma::uvec cluster_sizes(K);                  // number of points in each cluster
+  arma::rowvec row_sum(K);                      // squared norms of centers
+  arma::mat distances(n, K);                    // distance matrix between points and centers
+
+  // Main k-means iteration loop
   for(int iter = 0; iter < numIter; iter++) {
-    // Calculate squared norms of centers
+    // Calculate squared L2 norms of cluster centers
     row_sum = sum(square(M_cal), 1).t();
     
-    // Calculate distances efficiently
+    // Compute squared Euclidean distances between points and centers
+    // Using matrix multiplication for efficiency: ||x-y||^2 = ||x||^2 + ||y||^2 - 2x^T y
     distances = -2 * X * M_cal.t();
     distances.each_row() += row_sum;
     
