@@ -44,12 +44,6 @@
 #' 
 #' # Fit the model
 #' result <- LRMultiClass(X, y, numIter = 50)
-#' 
-#' # Examine results
-#' head(result$beta)  # View coefficient matrix
-#' plot(result$objective, type = "l",
-#'      xlab = "Iteration", ylab = "Objective value",
-#'      main = "Convergence plot")
 #'
 #' @export
 LRMultiClass <- function(X, y, numIter = 100, eta = 0.1, lambda = 1, beta_init = NULL) {

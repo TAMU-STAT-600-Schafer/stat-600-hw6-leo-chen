@@ -47,7 +47,6 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::vec& y,
     }
     
     // Get dimensions
-    int n = X.n_rows;
     int p = X.n_cols;
     int K = arma::max(y) + 1;
     
@@ -60,8 +59,8 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::vec& y,
     }
     
     // Initialize objective values vector
-    std::vector<double> objective;
-    objective.push_back(obj_c(X, arma::conv_to<arma::uvec>::from(y), lambda, beta));
+    arma::vec objective(numIter + 1);
+    objective(0) = obj_c(X, arma::conv_to<arma::uvec>::from(y), lambda, beta);
     
     // Newton's method cycle
     for (int iter = 0; iter < numIter; iter++) {
@@ -81,7 +80,7 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::vec& y,
         }
         
         // Store objective value
-        objective.push_back(obj_c(X, arma::conv_to<arma::uvec>::from(y), lambda, beta));
+        objective(iter + 1) = obj_c(X, arma::conv_to<arma::uvec>::from(y), lambda, beta);
     }
     
     return Rcpp::List::create(
