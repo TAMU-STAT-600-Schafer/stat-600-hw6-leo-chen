@@ -37,10 +37,10 @@ double obj_c(const arma::mat& X, const arma::uvec& y, double lambda, const arma:
 // beta_init - p x K matrix of starting beta values (always supplied in right format)
 // [[Rcpp::export]]
 Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::vec& y, 
-                         int numIter, 
-                         double eta, 
-                         double lambda, 
-                         const arma::mat& beta_init) {
+                         int numIter = 50, 
+                         double eta = 0.1, 
+                         double lambda = 1, 
+                         const arma::mat& beta_init = arma::mat()) {
     // Input validation
     if (X.n_rows != y.n_elem) {
         Rcpp::stop("Number of rows in X must match length of y");
